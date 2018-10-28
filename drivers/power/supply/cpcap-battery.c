@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2017 Tony Lindgren <tony@atomide.com>
  *
- * Some parts of the code based on earlie Motorola mapphone Linux kernel
+ * Some parts of the code based on earlier Motorola mapphone Linux kernel
  * drivers:
  *
  * Copyright (C) 2009-2010 Motorola, Inc.
@@ -491,24 +491,6 @@ static int cpcap_battery_get_property(struct power_supply *psy,
 		break;
 	case POWER_SUPPLY_PROP_CHARGE_COUNTER:
 		val->intval = latest->counter_uah;
-		break;
-	case POWER_SUPPLY_PROP_POWER_NOW:
-		tmp = (latest->voltage / 10000) * latest->current_ua;
-		val->intval = div64_s64(tmp, 100);
-		break;
-	case POWER_SUPPLY_PROP_POWER_AVG:
-		sample = latest->cc.sample - previous->cc.sample;
-		if (!sample) {
-			tmp = cpcap_battery_cc_get_avg_current(ddata);
-			tmp *= (latest->voltage / 10000);
-			val->intval = div64_s64(tmp, 100);
-			break;
-		}
-		accumulator = latest->cc.accumulator - previous->cc.accumulator;
-		tmp = cpcap_battery_cc_to_ua(ddata, sample, accumulator,
-					     latest->cc.offset);
-		tmp *= ((latest->voltage + previous->voltage) / 20000);
-		val->intval = div64_s64(tmp, 100);
 		break;
 	case POWER_SUPPLY_PROP_CAPACITY_LEVEL:
 		if (cpcap_battery_full(ddata))
