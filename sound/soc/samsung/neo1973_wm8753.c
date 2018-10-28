@@ -107,7 +107,7 @@ static int neo1973_hifi_hw_free(struct snd_pcm_substream *substream)
 }
 
 /*
- * Neo1973 WM8753 HiFi DAI opserations.
+ * Neo1973 WM8753 HiFi DAI operations.
  */
 static struct snd_soc_ops neo1973_hifi_ops = {
 	.hw_params = neo1973_hifi_hw_params,
@@ -276,7 +276,7 @@ SND_SOC_DAILINK_DEFS(bluetooth,
 	DAILINK_COMP_ARRAY(COMP_CODEC("wm8753.0-001a", "wm8753-voice")));
 
 static struct snd_soc_dai_link neo1973_dai[] = {
-{ /* Hifi Playback - for similatious use with voice below */
+{ /* Hifi Playback - for simultaneous use with voice below */
 	.name = "WM8753",
 	.stream_name = "WM8753 HiFi",
 	.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
