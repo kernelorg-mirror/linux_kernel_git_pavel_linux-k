@@ -15,6 +15,7 @@
  * http://www.ti.com/product/bq24158
  */
 
+#define DEBUG
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/param.h>
@@ -460,6 +461,8 @@ static int bq2415x_detect_revision(struct bq2415x_device *bq)
 	if (ret < 0 || chip < 0)
 		return -1;
 
+	printk("Detecting chip: %d\n", chip);
+
 	switch (chip) {
 	case BQ24150:
 	case BQ24150A:
@@ -860,6 +863,7 @@ static void bq2415x_set_autotimer(struct bq2415x_device *bq, int state)
 
 	if (state) {
 		schedule_delayed_work(&bq->work, BQ2415X_TIMER_TIMEOUT * HZ);
+		printk("bq2415x: Timer reset\n");
 		bq2415x_exec_command(bq, BQ2415X_TIMER_RESET);
 		bq->timer_error = NULL;
 	} else {
@@ -1076,6 +1080,8 @@ static ssize_t bq2415x_sysfs_set_timer(struct device *dev,
 	struct power_supply *psy = dev_get_drvdata(dev);
 	struct bq2415x_device *bq = power_supply_get_drvdata(psy);
 	int ret = 0;
+
+	printk("sysfs: set timer\n");
 
 	if (strncmp(buf, "auto", 4) == 0)
 		bq2415x_set_autotimer(bq, 1);
