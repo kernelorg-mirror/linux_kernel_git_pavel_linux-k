@@ -221,6 +221,7 @@ static struct snd_soc_dai_link speyside_dai[] = {
 		.ignore_suspend = 1,
 		SND_SOC_DAILINK_REG(dsp_codec),
 	},
+	/* Inspiration? */
 	{
 		.name = "Baseband",
 		.stream_name = "Baseband",

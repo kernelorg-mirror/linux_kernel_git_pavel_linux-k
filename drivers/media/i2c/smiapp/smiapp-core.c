@@ -12,6 +12,7 @@
  * Based on smia-sensor.c by Tuukka Toivonen <tuukkat76@gmail.com>
  */
 
+#define DEBUG
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/device.h>

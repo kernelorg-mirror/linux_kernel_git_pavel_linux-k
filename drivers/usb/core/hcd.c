@@ -3032,6 +3032,7 @@ usb_hcd_platform_shutdown(struct platform_device *dev)
 
 	/* No need for pm_runtime_put(), we're shutting down */
 	pm_runtime_get_sync(&dev->dev);
+	printk(KERN_CRIT "usb_hcd_platform_shutdown\n");
 
 	if (hcd->driver->shutdown)
 		hcd->driver->shutdown(hcd);
