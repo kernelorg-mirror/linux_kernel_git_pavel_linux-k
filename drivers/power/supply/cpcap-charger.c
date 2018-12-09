@@ -66,6 +66,8 @@
  * CPCAP_REG_CRM charge voltages based on the ADC channel 1 values.
  * Note that these register bits don't match MC13783UG.pdf VCHRG
  * register bits.
+ *
+ * Above 4.10V, these are just 0.025V per step.
  */
 #define CPCAP_REG_CRM_VCHRG(val)	(((val) & 0xf) << 4)
 #define CPCAP_REG_CRM_VCHRG_3V80	CPCAP_REG_CRM_VCHRG(0x0)
@@ -87,19 +89,27 @@
 
 static int voltage_to_register(int microvolt)
 {
-	switch (microvolt/1000) {
-	case 3800: return CPCAP_REG_CRM_VCHRG_3V80;
-	case 4100: return CPCAP_REG_CRM_VCHRG_4V10;
-	case 4200: return CPCAP_REG_CRM_VCHRG_4V20;
-	case 4350: return CPCAP_REG_CRM_VCHRG_4V35;
-	default: return -EINVAL;
-	}
+	int milivolt = microvolt/1000;
+	int res;
+	
+	if (milivolt < 4100)
+		return CPCAP_REG_CRM_VCHRG_3V80;
+	if (milivolt > 4350)
+		return -EINVAL;
+
+	milivolt = milivolt - (4100 - 250);
+	res = milivolt / 250;
+	BUG_ON(res < 1);
+	BUG_ON(res > 0xb);
+	return CPCAP_REG_CRM_VCHRG(res);
 }
 
 /*
  * CPCAP_REG_CRM charge currents. These seem to match MC13783UG.pdf
  * values in "Table 8-3. Charge Path Regulator Current Limit
  * Characteristics" for the nominal values.
+ *
+ * Except 70mA and 1.596A and unlimited, these are simply 88.7mA / step.
  */
 #define CPCAP_REG_CRM_ICHRG(val)	(((val) & 0xf) << 0)
 #define CPCAP_REG_CRM_ICHRG_0A000	CPCAP_REG_CRM_ICHRG(0x0)
@@ -121,14 +131,21 @@ static int voltage_to_register(int microvolt)
 
 static int current_to_register(int microamp)
 {
-	switch (microamp/1000) {
-	case 0:    return CPCAP_REG_CRM_ICHRG_0A000;
-	case 70:   return CPCAP_REG_CRM_ICHRG_0A070;
-	case 177:  return CPCAP_REG_CRM_ICHRG_0A177;
-	case 532:  return CPCAP_REG_CRM_ICHRG_0A532;
-	case 1596: return CPCAP_REG_CRM_ICHRG_1A596;
-	default: return -EINVAL;
-	}
+	int miliamp = microamp/1000;
+	int res;
+	if (miliamp < 0)
+		return -EINVAL;
+	if (miliamp < 70) 
+		return CPCAP_REG_CRM_ICHRG(0x0);
+	if (miliamp < 177)
+		return CPCAP_REG_CRM_ICHRG(0x1);
+	if (miliamp > 1596)
+		return CPCAP_REG_CRM_ICHRG(0xe);
+
+	res = microamp / 88666;
+	if (res > 0xd)
+		res = 0xd;
+	return CPCAP_REG_CRM_ICHRG(res);
 }
 
 enum {
