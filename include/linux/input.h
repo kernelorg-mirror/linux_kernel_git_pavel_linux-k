@@ -147,6 +147,7 @@ struct input_dev {
 
 	struct ff_device *ff;
 
+	int debounce_key;
 	unsigned int repeat_key;
 	struct timer_list timer;
 
