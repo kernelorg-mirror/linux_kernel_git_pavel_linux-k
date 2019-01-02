@@ -1,10 +1,11 @@
 L1TF - L1 Terminal Fault
 ========================
 
-L1 Terminal Fault is a hardware vulnerability which allows unprivileged
-speculative access to data which is available in the Level 1 Data Cache
-when the page table entry controlling the virtual address, which is used
-for the access, has the Present bit cleared or other reserved bits set.
+L1 Terminal Fault is a hardware vulnerability on most recent Intel x86
+CPUs which allows unprivileged speculative access to data which is
+available in the Level 1 Data Cache when the page table entry
+controlling the virtual address, which is used for the access, has the
+Present bit cleared or other reserved bits set.
 
 Affected processors
 -------------------
@@ -76,12 +77,14 @@ Attack scenarios
    deterministic and more practical.
 
    The Linux kernel contains a mitigation for this attack vector, PTE
-   inversion, which is permanently enabled and has no performance
-   impact. The kernel ensures that the address bits of PTEs, which are not
-   marked present, never point to cacheable physical memory space.
+   inversion, which is permanently enabled and has no measurable
+   performance impact in most configurations. The kernel ensures that
+   the address bits of PTEs, which are not marked present, never point
+   to cacheable physical memory space. On x86-32, this physical memory
+   needs to be limited to 2GiB to make mitigation effective.
 
-   A system with an up to date kernel is protected against attacks from
-   malicious user space applications.
+   Mitigation is present in kernels v4.19 and newer, and in
+   recent -stable kernels.
 
 2. Malicious guest in a virtual machine
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
