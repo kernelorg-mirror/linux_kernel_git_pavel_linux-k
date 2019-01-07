@@ -1,0 +1,59 @@
+Requirements for RGB LED interface:
+
+1) Userspace should be able to set the white color
+
+2) Userspace should be able to arbitrary color from well known list
+and it should approximately match what would CRT, LCD or OLED monitor
+display. Color list is for example here:
+
+	 https://www.rapidtables.com/web/color/RGB_Color.html
+
+    2a) LEDs probably slightly change color as they age. That's out of
+    scope, unless the variation is much greater than on monitors.
+
+    3a) Manufacturing differences cause small color variation. Again,
+    that's out of scope, unless the variation is much greater than on
+    monitors.
+
+Nice to have features:
+
+3) Full range of available colors/intensities should be available to
+userspace
+
+4) Interface should work well with existing triggers
+
+5) It would be nice if userland knew how many lumens are produced at
+each wavelength for each setting (again, minus aging and manufacturing
+variations).
+
+6) Complexity of math in kernel should be low, and preferably it
+should be integer or fixed point
+
+Problems:
+
+a) RGB LEDs are usually not balanced. Setting 100% PWM on
+red/green/blue channels will result in nothing close to white
+light. In fact, to get white light on N900, blue and green channel's
+PWM needs to be set pretty low, as in 5%.
+
+b) LED class does not define any relation between "brightness" in
+sysfs and ammount of light in lumens. Some drivers use close to linear
+relation, some use exponential relation. Human eyes percieve logarithm
+of lumens. RGB color model uses even more complex function.
+
+	   https://en.wikipedia.org/wiki/Gamma_correction
+	   #Windows, Mac, sRGB and TV/video standard gammas
+	   https://en.wikipedia.org/wiki/SRGB#Specification_of_the_transformation
+
+c) Except for white LEDs, LEDs are basically sources of single
+wavelength of light, while CRTs and LCDs produce broader
+spectrums.
+
+d) RG, RGBW and probably other LED combinations exist.
+
+e) Not all "red" LEDs will produce same wavelength. Similar
+differences will exist for other colors.
+
+f) We have existing RGB LEDs represented as three separate
+monochromatic LEDs in sysfs.
+
