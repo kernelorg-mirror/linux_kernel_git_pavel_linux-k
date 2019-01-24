@@ -1443,8 +1443,12 @@ static int asoc_mcbsp_probe(struct platform_device *pdev)
 		return ret;
 
 	if (mcbsp->pdata->reg_size == 2) {
+	  printk("This needs to go to init_dais!\n");
+	  WARN_ON(1);
+	  /*
 		omap_mcbsp_dai.playback.formats = SNDRV_PCM_FMTBIT_S16_LE;
 		omap_mcbsp_dai.capture.formats = SNDRV_PCM_FMTBIT_S16_LE;
+	  */
 	}
 
 	ret = devm_snd_soc_register_component(&pdev->dev,
