@@ -313,8 +313,9 @@ static int motmdm_dlci_receive_buf(struct gsm_serdev_dlci *gsm_dlci,
 	else if (mot_dlci->handle_command)
 		mot_dlci->handle_command(mot_dlci, id, msg, msglen);
 
-err_kfifo:
 	wake_up_interruptible(&mot_dlci->read_queue);
+
+err_kfifo:
 
 	return err;
 }
