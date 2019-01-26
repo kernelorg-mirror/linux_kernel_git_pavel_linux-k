@@ -706,7 +706,6 @@ static __poll_t motmdm_cdev_poll(struct file *file, poll_table *wait)
 		mask |= EPOLLIN | EPOLLRDNORM;
 	if (cdata->disconnected)
 		mask |= EPOLLHUP;
-	mask |= (EPOLLOUT | EPOLLWRNORM);
 
 	return mask;
 }
