@@ -914,7 +914,7 @@ static int tk_request(struct l2cap_conn *conn, u8 remote_oob, u8 auth,
 			hcon->pending_sec_level = BT_SECURITY_HIGH;
 	}
 
-	/* If both devices have Keyoard-Display I/O, the master
+	/* If both devices have Keyboard-Display I/O, the master
 	 * Confirms and the slave Enters the passkey.
 	 */
 	if (smp->method == OVERLAP) {
