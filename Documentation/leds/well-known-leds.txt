@@ -10,9 +10,9 @@ Anyway, if backwards compatibility is not an issue, new code should
 use one of the "good" names from this list, and you should extend the
 list where applicable.
 
-Bad names are listed, too, in case you are writing application that
-wants to use particular feature, you should probe for good name first
-but then try the bad ones, too".
+Bad names are listed, too; in case you are writing application that
+wants to use particular feature, you should probe for good name, first,
+but then try the bad ones, too.
 
 * Keyboards
 
@@ -46,3 +46,7 @@ Good: "status-led:{red,green,blue}" (Motorola Droid 4)
 Bad: "lp5523:{r,g,b}" (Nokia N900)
 
 Phones usually have multi-color status LED.
+
+* Power management
+
+Good: "platform:*:charging" (allwinner sun50i)
