@@ -335,5 +335,5 @@ static struct mdio_device_id __maybe_unused dp83822_tbl[] = {
 MODULE_DEVICE_TABLE(mdio, dp83822_tbl);
 
 MODULE_DESCRIPTION("Texas Instruments DP83822 PHY driver");
-MODULE_AUTHOR("Dan Murphy <dmurphy@ti.com");
-MODULE_LICENSE("GPL v2");
+MODULE_AUTHOR("Dan Murphy <dmurphy@ti.com>");
+MODULE_LICENSE("GPL");

@@ -44,6 +44,6 @@ static struct hid_driver accutouch_driver = {
 
 module_hid_driver(accutouch_driver);
 
-MODULE_AUTHOR("Martyn Welch <martyn.welch@collabora.co.uk");
+MODULE_AUTHOR("Martyn Welch <martyn.welch@collabora.co.uk>");
 MODULE_DESCRIPTION("Elo Accutouch HID TouchScreen driver");
 MODULE_LICENSE("GPL");
