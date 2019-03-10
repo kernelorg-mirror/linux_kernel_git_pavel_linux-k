@@ -23,6 +23,7 @@ Bad: "shift-key-light" (Motorola Droid 4, capslock)
 
 Set of common keyboard LEDs, going back to PC AT or so.
 
+Good: "platform::kbd_backlight"
 Bad: "tpacpi::thinklight" (IBM/Lenovo Thinkpads)
 Bad: "lp5523:kb{1,2,3,4,5,6}" (Nokia N900)
 
