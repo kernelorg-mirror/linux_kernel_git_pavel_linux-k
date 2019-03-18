@@ -77,14 +77,15 @@ Attack scenarios
    deterministic and more practical.
 
    The Linux kernel contains a mitigation for this attack vector, PTE
-   inversion, which is permanently enabled and has no measurable
-   performance impact in most configurations. The kernel ensures that
-   the address bits of PTEs, which are not marked present, never point
-   to cacheable physical memory space. On x86-32, this physical memory
-   needs to be limited to 2GiB to make mitigation effective.
+   inversion, which has no measurable performance impact in most
+   configurations. The kernel ensures that the address bits of PTEs,
+   which are not marked present, never point to cacheable physical
+   memory space. For mitigation to be effective, physical memory needs
+   to be limited in some configurations.
 
    Mitigation is present in kernels v4.19 and newer, and in
-   recent -stable kernels.
+   recent -stable kernels. PAE needs to be enabled for mitigation to
+   work.
 
 2. Malicious guest in a virtual machine
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
