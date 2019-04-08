@@ -233,8 +233,7 @@ static int pattern_trig_store_patterns_string(struct pattern_trig_data *data,
 
 		if (data->patterns[data->npatterns].brightness > data->led_cdev->max_brightness) {
 			data->npatterns = 0;
-			err = -EINVAL;
-			goto out;
+			return -EINVAL;
 		}
 			 
 		if (ccount != 2) {
