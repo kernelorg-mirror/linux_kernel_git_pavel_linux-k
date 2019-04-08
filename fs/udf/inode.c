@@ -1389,7 +1389,10 @@ reread:
 	if (iinfo->i_alloc_type != ICBTAG_FLAG_AD_SHORT &&
 	    iinfo->i_alloc_type != ICBTAG_FLAG_AD_LONG &&
 	    iinfo->i_alloc_type != ICBTAG_FLAG_AD_IN_ICB) {
-		ret = -EIO;
+		ret = -EUCLEAN;
+		udf_err(inode->i_sb, "invalid allocation type: %u\n",
+			iinfo->i_alloc_type);
+
 		goto out;
 	}
 	iinfo->i_unique = 0;
