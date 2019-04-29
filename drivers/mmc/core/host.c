@@ -364,7 +364,7 @@ int mmc_of_parse_voltage(struct device_node *np, u32 *mask)
 		pr_debug("%pOF: voltage-ranges unspecified\n", np);
 		return 0;
 	}
-	num_ranges = num_ranges / sizeof(*voltage_ranges) / 2;
+	num_ranges = (num_ranges / sizeof(*voltage_ranges)) / 2;
 	if (!num_ranges) {
 		pr_err("%pOF: voltage-ranges empty\n", np);
 		return -EINVAL;
