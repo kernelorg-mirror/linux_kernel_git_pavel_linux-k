@@ -1001,7 +1001,7 @@ static int coresight_orphan_match(struct device *dev, void *data)
 	if (!i_csdev->orphan)
 		return 0;
 	/*
-	 * Circle throuch all the connection of that component.  If we find
+	 * Circle through all the connections of that component.  If we find
 	 * an orphan connection whose name matches @csdev, link it.
 	 */
 	for (i = 0; i < i_csdev->pdata->nr_outport; i++) {
@@ -1021,7 +1021,7 @@ static int coresight_orphan_match(struct device *dev, void *data)
 	i_csdev->orphan = still_orphan;
 
 	/*
-	 * Returning '0' ensures that all known component on the
+	 * Returning '0' ensures that all known components on the
 	 * bus will be checked.
 	 */
 	return 0;
