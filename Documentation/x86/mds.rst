@@ -54,13 +54,13 @@ needed for exploiting MDS requires:
  - to control the load to trigger a fault or assist
 
  - to have a disclosure gadget which exposes the speculatively accessed
-   data for consumption through a side channel.
+   data for consumption through a side channel
 
  - to control the pointer through which the disclosure gadget exposes the
    data
 
 The existence of such a construct in the kernel cannot be excluded with
-100% certainty, but the complexity involved makes it extremly unlikely.
+100% certainty, but the complexity involved makes it extremely unlikely.
 
 There is one exception, which is untrusted BPF. The functionality of
 untrusted BPF is limited, but it needs to be thoroughly investigated
