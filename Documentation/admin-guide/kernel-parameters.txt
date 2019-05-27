@@ -53,8 +53,8 @@
 			ACPI_DEBUG_PRINT statements, e.g.,
 			    ACPI_DEBUG_PRINT((ACPI_DB_INFO, ...
 			The debug_level mask defaults to "info".  See
-			Documentation/firmware-guide/acpi/debug.rst for more information about
-			debug layers and levels.
+			Documentation/firmware-guide/acpi/debug.rst for more
+			information about debug layers and levels.
 
 			Enable processor driver info messages:
 			    acpi.debug_layer=0x20000000
