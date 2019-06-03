@@ -11,7 +11,7 @@
 #include <linux/init.h>
 #include <linux/leds.h>
 
-#define BLINK_DELAY 30
+#define BLINK_DELAY 30 /* msec */
 
 DEFINE_LED_TRIGGER(ledtrig_disk);
 DEFINE_LED_TRIGGER(ledtrig_disk_read);

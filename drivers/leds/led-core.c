@@ -196,11 +196,38 @@ void led_blink_set(struct led_classdev *led_cdev,
 }
 EXPORT_SYMBOL_GPL(led_blink_set);
 
+void led_blink_once(struct led_classdev *led_cdev, 
+		    unsigned long delay_on)
+{
+	//printk("Blink once\n");
+
+	delay_on = 5;
+	
+	if (timer_pending(&led_cdev->blink_timer)) {
+		//printk("Already pending %d\n", 0);
+		mod_timer(&led_cdev->blink_timer, jiffies + msecs_to_jiffies(delay_on));
+		return;
+	}
+
+	led_cdev->blink_delay_on = 0;
+	led_cdev->blink_delay_off = 0;
+
+	set_bit(LED_BLINK_SW, &led_cdev->work_flags);
+	led_set_brightness_nosleep(led_cdev, 1);
+	set_bit(LED_BLINK_SW, &led_cdev->work_flags);
+	//printk("Mod timer, %d\n", 0);
+	
+	mod_timer(&led_cdev->blink_timer, jiffies + msecs_to_jiffies(delay_on));
+}
+
 void led_blink_set_oneshot(struct led_classdev *led_cdev,
 			   unsigned long *delay_on,
 			   unsigned long *delay_off,
 			   int invert)
 {
+	led_blink_once(led_cdev, delay_on);
+	return;
+
 	if (test_bit(LED_BLINK_ONESHOT, &led_cdev->work_flags) &&
 	     timer_pending(&led_cdev->blink_timer))
 		return;
