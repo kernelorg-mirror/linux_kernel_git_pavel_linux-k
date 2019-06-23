@@ -8099,7 +8099,7 @@ enum fan_control_commands {
 						 * and also watchdog cmd */
 };
 
-static bool fan_control_allowed;
+static bool fan_control_allowed = true;
 
 static enum fan_status_access_mode fan_status_access_mode;
 static enum fan_control_access_mode fan_control_access_mode;
