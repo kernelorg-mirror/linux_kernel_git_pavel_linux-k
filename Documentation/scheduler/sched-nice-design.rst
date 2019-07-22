@@ -50,7 +50,7 @@ people were running number crunching apps at nice +19.)
 
 So for HZ=1000 we changed nice +19 to 5msecs, because that felt like the
 right minimal granularity - and this translates to 5% CPU utilization.
-But the fundamental HZ-sensitive property for nice+19 still remained,
+But the fundamental HZ-sensitive property for nice +19 still remained,
 and we never got a single complaint about nice +19 being too _weak_ in
 terms of CPU utilization, we only got complaints about it (still) being
 too _strong_ :-)
@@ -98,9 +98,9 @@ scheduler.
 To address the second complaint (of nice levels not being consistent),
 the new scheduler makes nice(1) have the same CPU utilization effect on
 tasks, regardless of their absolute nice levels. So on the new
-scheduler, running a nice +10 and a nice 11 task has the same CPU
+scheduler, running a nice +10 and a nice +11 task has the same CPU
 utilization "split" between them as running a nice -5 and a nice -4
-task. (one will get 55% of the CPU, the other 45%.) That is why nice
+task. (One will get 55% of the CPU, the other 45%.) That is why nice
 levels were changed to be "multiplicative" (or exponential) - that way
 it does not matter which nice level you start out from, the 'relative
 result' will always be the same.
