@@ -2,7 +2,7 @@
 LED Transient Trigger
 =====================
 
-The leds timer trigger does not currently have an interface to activate
+The LEDs timer trigger does not currently have an interface to activate
 a one shot timer. The current support allows for setting two timers, one for
 specifying how long a state to be on, and the second for how long the state
 to be off. The delay_on value specifies the time period an LED should stay
@@ -18,12 +18,12 @@ goes away without deactivating the timer, the hardware will be left in that
 state permanently.
 
 Transient trigger addresses the need for one shot timer activation. The
-transient trigger can be enabled and disabled just like the other leds
+transient trigger can be enabled and disabled just like the other LEDs
 triggers.
 
-When an led class device driver registers itself, it can specify all leds
+When an LED class device driver registers itself, it can specify all LEDs
 triggers it supports and a default trigger. During registration, activation
-routine for the default trigger gets called. During registration of an led
+routine for the default trigger gets called. During registration of an LED
 class device, the LED state does not change.
 
 When the driver unregisters, deactivation routine for the currently active
@@ -37,12 +37,12 @@ that are active at the time driver gets suspended, continue to run, without
 being able to actually change the LED state. Once driver is resumed, triggers
 start functioning again.
 
-LED state changes are controlled using brightness which is a common led
+LED state changes are controlled using brightness which is a common LED
 class device property. When brightness is set to 0 from user space via
 echo 0 > brightness, it will result in deactivating the current trigger.
 
 Transient trigger uses standard register and unregister interfaces. During
-trigger registration, for each led class device that specifies this trigger
+trigger registration, for each LED class device that specifies this trigger
 as its default trigger, trigger activation routine will get called. During
 registration, the LED state does not change, unless there is another trigger
 active, in which case LED state changes to LED_OFF.
@@ -106,7 +106,7 @@ transient trigger is activated these properties are set to default values.
 		changing the state to the specified state.
 		Driver could map these values to inverted depending on the
 		default states it defines for the LED in its brightness_set()
-		interface which is called from the led brightness_set()
+		interface which is called from the LED brightness_set()
 		interfaces to control the LED state.
 
 When timer expires activate goes back to deactivated state, duration is left
