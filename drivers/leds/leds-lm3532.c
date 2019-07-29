@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 // TI LM3532 LED driver
 // Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
+// http://www.ti.com/lit/ds/symlink/lm3532.pdf
 
 #include <linux/i2c.h>
 #include <linux/leds.h>
@@ -23,7 +24,7 @@
 #define LM3532_REG_PWM_B_CFG	0x14
 #define LM3532_REG_PWM_C_CFG	0x15
 #define LM3532_REG_ZONE_CFG_A	0x16
-#define LM3532_REG_CTRL_A_BRT	0x17
+#define LM3532_REG_CTRL_A_BRT	0x17 /* Called "Control A Full-Scale Current " in documentation */
 #define LM3532_REG_ZONE_CFG_B	0x18
 #define LM3532_REG_CTRL_B_BRT	0x19
 #define LM3532_REG_ZONE_CFG_C	0x1a
@@ -38,6 +39,7 @@
 #define LM3532_REG_ZN_2_LO	0x65
 #define LM3532_REG_ZN_3_HI	0x66
 #define LM3532_REG_ZN_3_LO	0x67
+#define LM3532_REG_ZN_TARGET	0x70
 #define LM3532_REG_MAX		0x7e
 
 /* Contorl Enable */
@@ -302,7 +304,7 @@ static int lm3532_led_disable(struct lm3532_led *led_data)
 	int ret;
 
 	ret = regmap_update_bits(led_data->priv->regmap, LM3532_REG_ENABLE,
-					 ctrl_en_val, ~ctrl_en_val);
+					 ctrl_en_val, 0);
 	if (ret) {
 		dev_err(led_data->priv->dev, "Failed to set ctrl:%d\n", ret);
 		return ret;
@@ -321,6 +323,7 @@ static int lm3532_brightness_set(struct led_classdev *led_cdev,
 
 	mutex_lock(&led->priv->lock);
 
+	/* Actually, I don't think this is acceptable */
 	if (led->mode == LM3532_BL_MODE_ALS) {
 		if (brt_val > LED_OFF)
 			ret = lm3532_led_enable(led);
@@ -339,10 +342,22 @@ static int lm3532_brightness_set(struct led_classdev *led_cdev,
 	if (ret)
 		goto unlock;
 
+	/* This driver is sick. It manipulates maximum current register (5-bit),
+	   but fails to control 8-bit brightness register... which is exponential
+	   so it allows >8 bit of control */
+
 	brightness_reg = LM3532_REG_CTRL_A_BRT + led->control_bank * 2;
-	brt_val = brt_val / LM3532_BRT_VAL_ADJUST;
+	brt_val = 255 / LM3532_BRT_VAL_ADJUST;
 
 	ret = regmap_write(led->priv->regmap, brightness_reg, brt_val);
+
+	brightness_reg = 0x70 + led->control_bank * 5;
+
+	ret = regmap_write(led->priv->regmap, brightness_reg, brt_val);
+	ret = regmap_write(led->priv->regmap, brightness_reg+1, brt_val);
+	ret = regmap_write(led->priv->regmap, brightness_reg+2, brt_val);
+	ret = regmap_write(led->priv->regmap, brightness_reg+3, brt_val);
+	ret = regmap_write(led->priv->regmap, brightness_reg+4, brt_val);
 
 unlock:
 	mutex_unlock(&led->priv->lock);
@@ -382,7 +397,7 @@ static int lm3532_als_configure(struct lm3532_data *priv,
 	struct lm3532_als_data *als = priv->als_data;
 	u32 als_vmin, als_vmax, als_vstep;
 	int zone_reg = LM3532_REG_ZN_0_HI;
-	int brightnes_config_reg;
+	int brightness_config_reg;
 	int ret;
 	int i;
 
@@ -415,10 +430,10 @@ static int lm3532_als_configure(struct lm3532_data *priv,
 	if (ret)
 		return ret;
 
-	brightnes_config_reg = LM3532_REG_ZONE_CFG_A + led->control_bank * 2;
+	brightness_config_reg = LM3532_REG_ZONE_CFG_A + led->control_bank * 2;
 
-	return regmap_update_bits(priv->regmap, brightnes_config_reg,
-				  LM3532_I2C_CTRL, LM3532_ALS_CTRL);
+	return regmap_update_bits(priv->regmap, brightness_config_reg,
+				  LM3532_I2C_CTRL | LM3532_ALS_CTRL, LM3532_ALS_CTRL);
 }
 
 static int lm3532_parse_als(struct lm3532_data *priv)
@@ -483,6 +498,34 @@ static int lm3532_parse_als(struct lm3532_data *priv)
 	return ret;
 }
 
+static void init_default_brightness(struct led_classdev *cdev, const char *tmp)
+{
+	if (!strcmp(tmp, "on")) {
+		cdev->brightness_set_blocking(cdev, cdev->max_brightness);
+		return;
+	}
+	if (!strcmp(tmp, "off")) {
+		cdev->brightness_set_blocking(cdev, 0);
+		return;
+	}
+	if (!strcmp(tmp, "keep"))
+		return;
+	printk("Invalid value for default brightness\n");
+}
+
+static void fwnode_default_brightness(struct led_classdev *cdev, struct fwnode_handle *child)
+{
+	const char *tmp;
+
+	if (!fwnode_property_read_string(child, "default-state", &tmp)) {
+	  printk("Do not have default state\n");
+	  init_default_brightness(cdev, "on");
+		return;
+	}
+
+	init_default_brightness(cdev, tmp);
+}
+
 static int lm3532_parse_node(struct lm3532_data *priv)
 {
 	struct fwnode_handle *child = NULL;
@@ -536,11 +579,13 @@ static int lm3532_parse_node(struct lm3532_data *priv)
 		ret = fwnode_property_read_u32(child, "ti,led-mode",
 					       &led->mode);
 		if (ret) {
+		  /* FIXME: should just default to non-als mod */
 			dev_err(&priv->client->dev, "ti,led-mode property missing\n");
 			fwnode_handle_put(child);
 			goto child_out;
 		}
 
+		/* FIXME: check for invalid ti,led-mode s? */
 		if (led->mode == LM3532_BL_MODE_ALS) {
 			ret = lm3532_parse_als(priv);
 			if (ret)
@@ -554,7 +599,7 @@ static int lm3532_parse_node(struct lm3532_data *priv)
 							       NULL, 0);
 
 		if (led->num_leds > LM3532_MAX_LED_STRINGS) {
-			dev_err(&priv->client->dev, "To many LED string defined\n");
+			dev_err(&priv->client->dev, "Too many LED strings defined\n");
 			continue;
 		}
 
@@ -582,6 +627,8 @@ static int lm3532_parse_node(struct lm3532_data *priv)
 		led->led_dev.name = led->label;
 		led->led_dev.brightness_set_blocking = lm3532_brightness_set;
 
+		lm3532_init_registers(led);
+
 		ret = devm_led_classdev_register(priv->dev, &led->led_dev);
 		if (ret) {
 			dev_err(&priv->client->dev, "led register err: %d\n",
@@ -590,7 +637,7 @@ static int lm3532_parse_node(struct lm3532_data *priv)
 			goto child_out;
 		}
 
-		lm3532_init_registers(led);
+		fwnode_default_brightness(&led->led_dev, child);
 
 		i++;
 	}
