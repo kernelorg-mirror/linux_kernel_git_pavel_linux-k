@@ -2865,6 +2865,8 @@ static int _regmap_update_bits(struct regmap *map, unsigned int reg,
 	if (change)
 		*change = false;
 
+	WARN_ON(val & ~mask);
+
 	if (regmap_volatile(map, reg) && map->reg_update_bits) {
 		ret = map->reg_update_bits(map->bus_context, reg, mask, val);
 		if (ret == 0 && change)
