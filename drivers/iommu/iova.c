@@ -56,7 +56,7 @@ EXPORT_SYMBOL_GPL(init_iova_domain);
 
 bool has_iova_flush_queue(struct iova_domain *iovad)
 {
-	return !!iovad->fq;
+  return !!READ_ONCE(iovad->fq);
 }
 
 static void free_iova_flush_queue(struct iova_domain *iovad)
@@ -104,7 +104,7 @@ int init_iova_flush_queue(struct iova_domain *iovad,
 
 	smp_wmb();
 
-	iovad->fq = queue;
+	iovad->fq = queue; // WRITE_ONCE ?
 
 	timer_setup(&iovad->fq_timer, fq_flush_timeout, 0);
 	atomic_set(&iovad->fq_timer_on, 0);
