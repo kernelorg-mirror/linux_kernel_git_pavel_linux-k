@@ -185,6 +185,14 @@
 		pwm-names = "enable", "direction";
 		direction-duty-cycle-ns = <10000000>;
 	};
+
+	backlight: backlight {
+	         compatible = "led-backlight";
+
+		 leds = <&backlight_led>;
+		 brightness-levels = <0 4 8 16 32 64 128 255>;
+		 default-brightness-level = <6>;
+	};
 };
 
 &dss {
@@ -200,14 +208,6 @@
 			remote-endpoint = <&lcd0_in>;
 			lanes = <0 1 2 3 4 5>;
 		};
-	};
-
-	backlight: backlight {
-	         compatible = "led-backlight";
-
-		 leds = <&backlight_led>;
-		 brightness-levels = <0 4 8 16 32 64 128 255>;
-		 default-brightness-level = <6>;
 	};
 
 	lcd0: display {
