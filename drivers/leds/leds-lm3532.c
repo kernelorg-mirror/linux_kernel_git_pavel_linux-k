@@ -629,7 +629,7 @@ static int lm3532_parse_node(struct lm3532_data *priv)
 
 		lm3532_init_registers(led);
 
-		ret = devm_led_classdev_register(priv->dev, &led->led_dev);
+		ret = devm_of_led_classdev_register(priv->dev, to_of_node(child), &led->led_dev);
 		if (ret) {
 			dev_err(&priv->client->dev, "led register err: %d\n",
 				ret);
